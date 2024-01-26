@@ -9,7 +9,7 @@ const router= express.Router();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const jokeDataPath = path.join(__dirname, "../elf", "data", "jokes.json");
+const jokeDataPath = path.join(__dirname, "elf", "data", "jokes.json");
 
 const app=express();
 
