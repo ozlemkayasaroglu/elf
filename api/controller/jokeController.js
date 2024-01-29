@@ -1,29 +1,13 @@
 import express from "express";
-import cors from "cors";
 import fs from "fs";
 import path, {dirname, resolve} from "path";
 import { fileURLToPath } from "url";
-
 
 const router= express.Router();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const jokeDataPath = path.join(__dirname, "data", "jokes.json");
-
-const app=express();
-
-const corsOptions = {
-    origin: "PORT",
-    credentials: true,
-    methods: "GET",
-    allowedHeaders: "Content-Type, Authorization",
-    optionsSuccessStatus: 200,
-}
-
-
-app.use(cors(corsOptions));
-
+const jokeDataPath = path.join(__dirname, "..", "data", "jokes.json");
 
 
 //tüm şakalar
@@ -43,14 +27,5 @@ const getJokes= () => {
     });
 };
 
-
-
-console.log(await getJokes())
-
-
-const PORT = process.env.PORT || 3000;
-app.listen(3001, () => {
-    console.log("elf şakaları 3001'de çalışıyor")
-})
 
 export default router;
