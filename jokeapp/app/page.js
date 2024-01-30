@@ -1,91 +1,132 @@
+// "use client";
+// import { useState, useEffect } from "react";
+// import JokeData from "./component/jokeData";
+
+// export default function Home() {
+//   const [text, setText] = useState("");
+//   const [image, setImage] = useState("");
+//   const [xLink, setXLink] = useState("");
+//   const[id, setId] =useState("");
+
+//   useEffect(() => {
+//     async function fetchJoke() {
+//       try {
+//         const response = await fetch(
+//           "http://localhost:3001/joke"
+//         );
+//         if (!response.ok) {
+//           throw new Error("veri alınamadı");
+//         }
+
+//         const data = await response.json();
+
+//        console.log(data)
+
+//       } catch (error) {
+//         console.error("fetch hatası");
+//       }
+//     }
+//     fetchJoke();
+//   }, []);
+
+//   return <div>sakjda</div>;
+// }
+
 "use client";
-import { useEffect, useState } from "react";
-import React from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
-  const [joke, setJoke] = useState();
-  const [showJoke, setShowJoke] = useState("");
-  const [image, setImage] = useState("")
+  const [jokes, setJokes] = useState([]);
+  const [currentJokeIndex, setCurrentJokeIndex] = useState(0);
 
+  const getNextJoke = () => {
+    // Rastgele bir şaka indeksi seç
+    const randomIndex = Math.floor(Math.random() * jokes.length);
+
+    // Seçilen indeksi güncelle
+    setCurrentJokeIndex(randomIndex);
+  };
 
   useEffect(() => {
-    async function fetchJoke() {
+    async function fetchJokes() {
       try {
         const response = await fetch("http://localhost:3001/joke");
         if (!response.ok) {
-          throw new Error("fetch hatası");
-        }
-        const data = await response.json();
-        
-        if (data && data.length > 0) {
-          const initialJoke = data[0].text;
-          setShowJoke(initialJoke);
-          setImage(initialJoke);
+          throw new Error("veri alınamadı");
         }
 
-console.log(image)
+        const data = await response.json();
+        setJokes(data);
       } catch (error) {
-        console.error(error);
+        console.error("fetch hatası", error);
       }
     }
-    fetchJoke();
+
+    // Şakaları ilk yükleme
+    fetchJokes();
   }, []);
- 
 
-  const getRandomJoke = () => {
-    if (joke && joke.length > 0) {
-      const randomIndex = Math.floor(Math.random() * joke.length);
-      const selectedJoke = joke[randomIndex];
-      const jokeText = selectedJoke.text;
-      const jokeImage = selectedJoke.image;
-
-      setShowJoke(jokeText);
-      setImage(jokeImage);
-
-
-    }
+  // Eğer şakalar yüklenmediyse
+  if (jokes.length === 0) {
+    return <div>Şakalar yükleniyor...</div>;
   }
 
+  // Mevcut şaka
+  const currentJoke = jokes[currentJokeIndex];
+  console.log(currentJoke.text);
+  console.log(currentJoke.image);
+  console.log(currentJoke.xLink);
+
   return (
+    <>
+      <div className="relative bg-purple-400">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'url("/background.jpg")',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        ></div>
 
+        <div className="relative z-10 flex flex-col justify-center items-center min-h-screen">
+          <div className="max-w-full mx-auto p-8 bg-sky-600 rounded-lg text-center ">
+            <h2 className="text-4xl font-bold mb-3 mt-2 text-zinc-100 opacity-1">
+              Elf Şakaları
+            </h2>
+            <div className="flex flex-col items-center justify-center ">
+              <Image
+                className="border rounded-md bg-white m-4 w-1/2 "
+                src={currentJoke.image}
+                width={300}
+                height={300}
+                alt="sakalar"
+              ></Image>
 
+              <h3 className="text-4xl font-bold mt-4 text-zinc-100">
+                "{currentJoke.text}"
+              </h3>
+            </div>
+          </div>
 
-    <><div className="relative bg-purple-400">
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: 'url("/background.jpg")',
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-
-      </div>
-      <div className="relative z-10 flex flex-col justify-center items-center min-h-screen">
-
-        <div className="max-w-full mx-auto p-8 bg-blue-600 rounded-lg text-center ">
-          <h2 className="text-4xl font-bold mb-8 text-zinc-100">
-            Elf's Jokes
-          </h2>
-          <div className="max-w-lg mx-auto p-8 bg-blue-600 text-zinc-100 rounded-lg text-center">
-            <h4 className="text-lg text-zinc-100">{showJoke}</h4>
-            {/* <Image className="text-xl font-bold mt-4 text-zinc-100" src={image} width={300}
-              height={300}
-              alt="jokephoto"></Image> */}
+          <div className="flex flex-row items-center justify-center">
+          <button
+            onClick={getNextJoke}
+            className="text-base font-semibold bg-amber-500 rounded-lg m-3 p-3 text-zinc-100"
+          >
+            Yenisini Getir
+          </button>
+          <Link
+          href={currentJoke.xLink}
+            className="text-base font-semibold bg-purple-500 rounded-lg  m-3 p-3 text-zinc-100"
+          >
+           Tweete git
+          </Link>
           </div>
         </div>
-        <div className="max-w-full mx-auto p-8 bg-amber-400 rounded-lg text-center mt-5">
-          <button onClick={getRandomJoke} > Şaka bas</button>
-        </div>
       </div>
-    </div>
-
-
-
     </>
   );
 }
-
-
-
